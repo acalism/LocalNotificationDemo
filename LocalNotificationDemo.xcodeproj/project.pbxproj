@@ -15,6 +15,9 @@
 		40550C562028326F0014E125 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 40550C552028326F0014E125 /* Assets.xcassets */; };
 		40550C592028326F0014E125 /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 40550C572028326F0014E125 /* LaunchScreen.storyboard */; };
 		40550C642028326F0014E125 /* LocalNotificationDemoTests.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40550C632028326F0014E125 /* LocalNotificationDemoTests.swift */; };
+		40550C6F202834B80014E125 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40550C6E202834B80014E125 /* NotificationManager.swift */; };
+		40550C71202835A60014E125 /* AppDelegate+UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40550C70202835A60014E125 /* AppDelegate+UserNotification.swift */; };
+		407D83A4202897E20084EF1F /* MoreNotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -40,6 +43,11 @@
 		40550C5F2028326F0014E125 /* LocalNotificationDemoTests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = LocalNotificationDemoTests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 		40550C632028326F0014E125 /* LocalNotificationDemoTests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LocalNotificationDemoTests.swift; sourceTree = "<group>"; };
 		40550C652028326F0014E125 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		40550C6E202834B80014E125 /* NotificationManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationManager.swift; sourceTree = "<group>"; };
+		40550C70202835A60014E125 /* AppDelegate+UserNotification.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "AppDelegate+UserNotification.swift"; sourceTree = "<group>"; };
+		40719EC92029904A00ACD88C /* watch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = watch.png; sourceTree = "<group>"; };
+		407D83A220288F740084EF1F /* submarine.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = submarine.caf; sourceTree = "<group>"; };
+		407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreNotificationViewController.swift; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -82,13 +90,18 @@
 			isa = PBXGroup;
 			children = (
 				40550C492028326F0014E125 /* AppDelegate.swift */,
+				40550C70202835A60014E125 /* AppDelegate+UserNotification.swift */,
+				40550C6E202834B80014E125 /* NotificationManager.swift */,
 				40550C4E2028326F0014E125 /* MasterViewController.swift */,
 				40550C502028326F0014E125 /* DetailViewController.swift */,
+				407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */,
 				40550C522028326F0014E125 /* Main.storyboard */,
 				40550C552028326F0014E125 /* Assets.xcassets */,
 				40550C572028326F0014E125 /* LaunchScreen.storyboard */,
 				40550C5A2028326F0014E125 /* Info.plist */,
 				40550C4B2028326F0014E125 /* LocalNotificationDemo.xcdatamodeld */,
+				407D83A220288F740084EF1F /* submarine.caf */,
+				40719EC92029904A00ACD88C /* watch.png */,
 			);
 			path = LocalNotificationDemo;
 			sourceTree = "<group>";
@@ -205,8 +218,11 @@
 			isa = PBXSourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40550C71202835A60014E125 /* AppDelegate+UserNotification.swift in Sources */,
 				40550C4A2028326F0014E125 /* AppDelegate.swift in Sources */,
+				407D83A4202897E20084EF1F /* MoreNotificationViewController.swift in Sources */,
 				40550C4D2028326F0014E125 /* LocalNotificationDemo.xcdatamodeld in Sources */,
+				40550C6F202834B80014E125 /* NotificationManager.swift in Sources */,
 				40550C4F2028326F0014E125 /* MasterViewController.swift in Sources */,
 				40550C512028326F0014E125 /* DetailViewController.swift in Sources */,
 			);
@@ -298,7 +314,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = YES;
 				ONLY_ACTIVE_ARCH = YES;
 				SDKROOT = iphoneos;
@@ -349,7 +365,7 @@
 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
 				GCC_WARN_UNUSED_FUNCTION = YES;
 				GCC_WARN_UNUSED_VARIABLE = YES;
-				IPHONEOS_DEPLOYMENT_TARGET = 11.2;
+				IPHONEOS_DEPLOYMENT_TARGET = 10.0;
 				MTL_ENABLE_DEBUG_INFO = NO;
 				SDKROOT = iphoneos;
 				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";

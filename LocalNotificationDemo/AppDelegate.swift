@@ -14,6 +14,9 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
 
     var window: UIWindow?
 
+    static var shared: AppDelegate? {
+        return UIApplication.shared.delegate as? AppDelegate
+    }
 
     func application(_ application: UIApplication, didFinishLaunchingWithOptions launchOptions: [UIApplicationLaunchOptionsKey: Any]?) -> Bool {
         // Override point for customization after application launch.
@@ -25,6 +28,10 @@ class AppDelegate: UIResponder, UIApplicationDelegate, UISplitViewControllerDele
         let masterNavigationController = splitViewController.viewControllers[0] as! UINavigationController
         let controller = masterNavigationController.topViewController as! MasterViewController
         controller.managedObjectContext = self.persistentContainer.viewContext
+
+        NotificationManager.onLaunch(with: launchOptions)
+        NotificationManager.registerRemoteNotifications()
+
         return true
     }
 

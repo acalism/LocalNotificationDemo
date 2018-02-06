@@ -8,6 +8,7 @@
 
 import UIKit
 import CoreData
+import UserNotifications
 
 class MasterViewController: UITableViewController, NSFetchedResultsControllerDelegate {
 
@@ -20,11 +21,22 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         // Do any additional setup after loading the view, typically from a nib.
         navigationItem.leftBarButtonItem = editButtonItem
 
-        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject(_:)))
-        navigationItem.rightBarButtonItem = addButton
+        let moreButton = UIBarButtonItem.init(title: "…", style: .done, target: self, action: #selector(moreNotification))
+        let addButton = UIBarButtonItem(barButtonSystemItem: .add, target: self, action: #selector(insertNewObject))
+        navigationItem.rightBarButtonItems = [addButton, moreButton]
         if let split = splitViewController {
             let controllers = split.viewControllers
             detailViewController = (controllers[controllers.count-1] as! UINavigationController).topViewController as? DetailViewController
+        }
+
+        tableView.tableFooterView = UIView()
+
+        let center = UNUserNotificationCenter.current()
+        center.requestAuthorization(options: [.alert, .badge, .sound, .carPlay]) { (authorized, error) in
+            guard authorized else {
+                return
+            }
+            print(authorized)
         }
     }
 
@@ -33,18 +45,20 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         super.viewWillAppear(animated)
     }
 
-    override func didReceiveMemoryWarning() {
-        super.didReceiveMemoryWarning()
-        // Dispose of any resources that can be recreated.
+    @objc
+    func moreNotification() {
+        let vc = MoreNotificationViewController()
+        show(vc, sender: self)
     }
 
     @objc
-    func insertNewObject(_ sender: Any) {
+    func insertNewObject() {
         let context = self.fetchedResultsController.managedObjectContext
         let newEvent = Event(context: context)
-             
+
+        let ti = 5 * Double((fetchedResultsController.sections?.first?.numberOfObjects ?? 0) + 1)
         // If appropriate, configure the new managed object.
-        newEvent.timestamp = Date()
+        newEvent.timestamp = Date().addingTimeInterval(ti)
 
         // Save the context.
         do {
@@ -55,6 +69,25 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
+
+        let content = UNMutableNotificationContent()
+        content.title = "Don't forget"
+        content.body = "Buy some milk"
+        content.sound = UNNotificationSound(named: "submarine.caf")
+        content.categoryIdentifier = NotificationManager.CategoryIdentifier.reminder.rawValue
+
+        let trigger = UNTimeIntervalNotificationTrigger(timeInterval: ti, repeats: false)
+
+        let identifier = "\(newEvent.timestamp!)"
+        let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
+        UNUserNotificationCenter.current().add(request, withCompletionHandler: { (error) in
+            if let e = error {
+                // Something went wrong
+                print(e)
+                return
+            }
+            print("add local notification successfully. id = \(identifier); content = \(content); trigger = \(trigger)")
+        })
     }
 
     // MARK: - Segues
