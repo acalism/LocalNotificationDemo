@@ -69,16 +69,21 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             let nserror = error as NSError
             fatalError("Unresolved error \(nserror), \(nserror.userInfo)")
         }
+        createLocalNotification(event: newEvent, timeInterval: ti)
+    }
 
+
+    func createLocalNotification(event newEvent: Event, timeInterval ti: TimeInterval) {
         let content = UNMutableNotificationContent()
         content.title = "Don't forget"
         content.body = "Buy some milk"
-        content.sound = UNNotificationSound(named: "submarine.caf")
+        content.attachments = [audio]
+        content.sound = sound
         content.categoryIdentifier = NotificationManager.CategoryIdentifier.reminder.rawValue
 
         let trigger = UNTimeIntervalNotificationTrigger(timeInterval: ti, repeats: false)
 
-        let identifier = "\(newEvent.timestamp!)"
+        let identifier = newEvent.timestamp!.description
         let request = UNNotificationRequest(identifier: identifier, content: content, trigger: trigger)
         UNUserNotificationCenter.current().add(request, withCompletionHandler: { (error) in
             if let e = error {
@@ -88,6 +93,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
             }
             print("add local notification successfully. id = \(identifier); content = \(content); trigger = \(trigger)")
         })
+    }
+
+    func removeLocalNotification(event: Event) {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [event.timestamp!.description])
     }
 
     // MARK: - Segues
@@ -130,7 +139,10 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let context = fetchedResultsController.managedObjectContext
-            context.delete(fetchedResultsController.object(at: indexPath))
+            let event = fetchedResultsController.object(at: indexPath)
+            context.delete(event)
+
+            removeLocalNotification(event: event)
                 
             do {
                 try context.save()
@@ -144,7 +156,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
     }
 
     func configureCell(_ cell: UITableViewCell, withEvent event: Event) {
-        cell.textLabel!.text = event.timestamp!.description
+        cell.textLabel!.text = timeFormatter.string(from: event.timestamp!)
     }
 
     // MARK: - Fetched results controller

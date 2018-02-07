@@ -10,6 +10,24 @@ import UIKit
 import UserNotifications
 import CoreLocation
 
+
+let dateFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .iso8601)
+    formatter.dateStyle = .short
+    formatter.timeStyle = .none
+    return formatter
+}()
+
+let timeFormatter: DateFormatter = {
+    let formatter = DateFormatter()
+    formatter.calendar = Calendar(identifier: .iso8601)
+    formatter.dateStyle = .none
+    formatter.timeStyle = .medium
+    return formatter
+}()
+
+
 class MoreNotificationViewController: UITableViewController {
 
 
@@ -21,9 +39,10 @@ class MoreNotificationViewController: UITableViewController {
 
         tableView.register(Cell.self, forCellReuseIdentifier: "Cell")
         tableView.tableFooterView = UIView()
+    }
 
-
-
+    deinit {
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["MorningAlarm", "GetOffAlarm"])
     }
 
     // MARK: - Table view data source
@@ -39,8 +58,11 @@ class MoreNotificationViewController: UITableViewController {
     }
 
     override func tableView(_ tv: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) {
-        if action == #selector(Cell.onSwitch(_:)) {
-            //
+        if action == #selector(Cell.onSwitch(_:)), let s = sender as? UISwitch {
+            dataArray[indexPath.row].isOn = s.isOn
+            if !s.isOn {
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["location"])
+            }
         }
     }
     /*
@@ -91,7 +113,7 @@ class MoreNotificationViewController: UITableViewController {
 
     var dataArray = [
         //Model(eventName: "声音", isOn: true, attach: Model.Attach.time(Date().addingTimeInterval(10), Cell.timeFormatter)),
-        Model(eventName: "日期", isOn: true, attach: Model.Attach.time(Date(), Cell.dateFormatter)),
+        Model(eventName: "日期", isOn: true, attach: Model.Attach.time(Date(), dateFormatter)),
         Model(eventName: "地理位置", isOn: true, attach: Model.Attach.location(CLLocation(latitude: 23, longitude: 114)))
     ]
 
@@ -108,22 +130,6 @@ class MoreNotificationViewController: UITableViewController {
 
 
     class Cell: UITableViewCell {
-
-        static let dateFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.calendar = Calendar(identifier: .iso8601)
-            formatter.dateStyle = .short
-            formatter.timeStyle = .none
-            return formatter
-        }()
-
-        static let timeFormatter: DateFormatter = {
-            let formatter = DateFormatter()
-            formatter.calendar = Calendar(identifier: .iso8601)
-            formatter.dateStyle = .none
-            formatter.timeStyle = .short
-            return formatter
-        }()
 
         let leftLabel = UILabel()
         let middleLabel = UILabel()
@@ -145,7 +151,6 @@ class MoreNotificationViewController: UITableViewController {
             contentView.addSubview(middleLabel)
             contentView.addSubview(`switch`)
             `switch`.isOn = false
-
             `switch`.addTarget(self, action: #selector(onSwitch(_:)), for: .valueChanged)
         }
 
@@ -156,51 +161,7 @@ class MoreNotificationViewController: UITableViewController {
             leftLabel.text = model.eventName
             `switch`.isOn = model.isOn
 
-            let center = UNUserNotificationCenter.current()
-//            let stopAction = UNNotificationAction(identifier: NotificationManager.ActionIdentifier.stop.rawValue, title: "Stop", options: [])
-//            let snoozeAction = UNNotificationAction(identifier: NotificationManager.ActionIdentifier.snooze.rawValue, title: "Snooze", options: [])
-//            let category = UNNotificationCategory(identifier: NotificationManager.CategoryIdentifier.reminder.rawValue, actions: [snoozeAction, stopAction], intentIdentifiers: [], options: [])
-
-            switch model.attach {
-            case .time(let date, let formatter):
-                middleLabel.text = formatter.string(from: date)
-                setNeedsLayout()
-
-                let moviePath = Bundle.main.url(forResource: "watch", withExtension: "png")!
-                let att = try! UNNotificationAttachment(identifier: NotificationManager.ActionIdentifier.stop.rawValue, url: moviePath, options: nil)
-
-                let content = UNMutableNotificationContent()
-                content.title = NSString.localizedUserNotificationString(forKey: "Wake up!", arguments: nil)
-                content.body = NSString.localizedUserNotificationString(forKey: "Rise and shine! It's morning time!", arguments: nil)
-                content.attachments = [att]
-                content.sound = UNNotificationSound(named: "submarine.caf")
-                content.categoryIdentifier = NotificationManager.CategoryIdentifier.reminder.rawValue
-
-                // Configure the trigger for a 7am wakeup.
-                var dateInfo = DateComponents()
-                dateInfo.hour = 7
-                dateInfo.minute = 0
-                let trigger = UNCalendarNotificationTrigger(dateMatching: dateInfo, repeats: false)
-
-                // Create the request object.
-                let request = UNNotificationRequest(identifier: "MorningAlarm", content: content, trigger: trigger)
-                center.add(request, withCompletionHandler: { (error) in
-                    if let e = error {
-                        print(e)
-                    }
-                })
-
-            case .location(let locate):
-                locationManager.requestAlwaysAuthorization()
-                CLGeocoder().reverseGeocodeLocation(locate, completionHandler: { (marks, error) in
-                    guard error == nil, let mark = marks?.first else {
-                        self.setNeedsLayout()
-                        return
-                    }
-                    self.middleLabel.text = [mark.name, mark.locality].flatMap{$0}.joined(separator: ", ")
-                    self.setNeedsLayout()
-                })
-            }
+            createLocalNotification(model: model)
         }
 
         override func layoutSubviews() {
@@ -216,10 +177,70 @@ class MoreNotificationViewController: UITableViewController {
 
         @objc
         func onSwitch(_ sender: Any) {
-            forward(for: #selector(onSwitch(_:)))
+            forward(for: #selector(onSwitch(_:)), sender: sender)
+        }
+
+        func createLocalNotification(model: Model) {
+            let center = UNUserNotificationCenter.current()
+
+            let content = UNMutableNotificationContent()
+            content.attachments = [video]
+            content.sound = sound
+            content.categoryIdentifier = NotificationManager.CategoryIdentifier.reminder.rawValue
+
+            switch model.attach {
+            case .time(let date, let formatter):
+                middleLabel.text = formatter.string(from: date)
+                setNeedsLayout()
+
+                content.title = NSString.localizedUserNotificationString(forKey: "Wake up!", arguments: nil)
+                content.subtitle = NSString.localizedUserNotificationString(forKey: "Rise and shine!", arguments: nil)
+                content.body = NSString.localizedUserNotificationString(forKey: "It's morning time!", arguments: nil)
+
+                // Configure the trigger for a 7am wakeup.
+                var dateInfo = DateComponents()
+                dateInfo.hour = 19
+                dateInfo.minute = 41
+                let trigger = UNCalendarNotificationTrigger(dateMatching: dateInfo, repeats: false)
+
+                // Create the request object.
+                let request = UNNotificationRequest(identifier: "MorningAlarm", content: content, trigger: trigger)
+                center.add(request, withCompletionHandler: { (error) in
+                    if let e = error {
+                        print(e)
+                    }
+                })
+
+            case .location(let locate):
+                content.title = NSString.localizedUserNotificationString(forKey: "Wake up!", arguments: nil)
+                content.subtitle = NSString.localizedUserNotificationString(forKey: "Near home!", arguments: nil)
+                content.body = NSString.localizedUserNotificationString(forKey: "It's time to get off!", arguments: nil)
+
+                let region = CLCircularRegion(center: locate.coordinate, radius: 1000, identifier: "地点")
+                region.notifyOnExit = false
+                region.notifyOnEntry = true
+                let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
+
+                // Create the request object.
+                let request = UNNotificationRequest(identifier: "GetOffAlarm", content: content, trigger: trigger)
+                center.add(request, withCompletionHandler: { (error) in
+                    if let e = error {
+                        print(e)
+                    }
+                })
+
+                locationManager.requestWhenInUseAuthorization() //requestAlwaysAuthorization()
+                CLGeocoder().reverseGeocodeLocation(locate, completionHandler: { (marks, error) in
+                    guard error == nil, let mark = marks?.first else {
+                        self.setNeedsLayout()
+                        return
+                    }
+                    self.middleLabel.text = [mark.name, mark.locality].flatMap{$0}.joined(separator: ", ")
+                    self.setNeedsLayout()
+                })
+            }
         }
     }
-
 }
 
 
@@ -261,9 +282,9 @@ extension UITableViewHeaderFooterView: FindHostView {
 // MARK: - Forward PerformAction to its delegate
 
 extension FindHostView where Self: UITableViewCell {
-    func forward(for aSelector: Selector) {
+    func forward(for aSelector: Selector, sender: Any? = nil) {
         if let cv = hostView, let ip = cv.indexPath(for: self) {
-            cv.delegate?.tableView?(cv, performAction: aSelector, forRowAt: ip, withSender: self)
+            cv.delegate?.tableView?(cv, performAction: aSelector, forRowAt: ip, withSender: sender ?? self)
         }
     }
 }

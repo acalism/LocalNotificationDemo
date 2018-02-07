@@ -20,6 +20,9 @@
 		407D83A4202897E20084EF1F /* MoreNotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */; };
 		40AA3D34202A9A7500668CAC /* submarine.caf in Resources */ = {isa = PBXBuildFile; fileRef = 407D83A220288F740084EF1F /* submarine.caf */; };
 		40AA3D35202A9A7500668CAC /* watch.png in Resources */ = {isa = PBXBuildFile; fileRef = 40719EC92029904A00ACD88C /* watch.png */; };
+		40AA3D3A202B309500668CAC /* superquest_attack.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 40AA3D38202B309400668CAC /* superquest_attack.mp4 */; };
+		40AA3D3B202B309500668CAC /* superquest.mp4 in Resources */ = {isa = PBXBuildFile; fileRef = 40AA3D39202B309400668CAC /* superquest.mp4 */; };
+		40AA3D3D202B3D4C00668CAC /* T-ara (티아라)-뷰티풀 걸 (Beautiful Girl).mp3 in Resources */ = {isa = PBXBuildFile; fileRef = 40AA3D3C202B3D4C00668CAC /* T-ara (티아라)-뷰티풀 걸 (Beautiful Girl).mp3 */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -50,6 +53,9 @@
 		40719EC92029904A00ACD88C /* watch.png */ = {isa = PBXFileReference; lastKnownFileType = image.png; path = watch.png; sourceTree = "<group>"; };
 		407D83A220288F740084EF1F /* submarine.caf */ = {isa = PBXFileReference; lastKnownFileType = file; path = submarine.caf; sourceTree = "<group>"; };
 		407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = MoreNotificationViewController.swift; sourceTree = "<group>"; };
+		40AA3D38202B309400668CAC /* superquest_attack.mp4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = superquest_attack.mp4; sourceTree = "<group>"; };
+		40AA3D39202B309400668CAC /* superquest.mp4 */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = text; path = superquest.mp4; sourceTree = "<group>"; };
+		40AA3D3C202B3D4C00668CAC /* T-ara (티아라)-뷰티풀 걸 (Beautiful Girl).mp3 */ = {isa = PBXFileReference; lastKnownFileType = audio.mp3; path = "T-ara (티아라)-뷰티풀 걸 (Beautiful Girl).mp3"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -94,9 +100,7 @@
 				40550C492028326F0014E125 /* AppDelegate.swift */,
 				40550C70202835A60014E125 /* AppDelegate+UserNotification.swift */,
 				40550C6E202834B80014E125 /* NotificationManager.swift */,
-				40550C4E2028326F0014E125 /* MasterViewController.swift */,
-				40550C502028326F0014E125 /* DetailViewController.swift */,
-				407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */,
+				40AA3D37202AF20500668CAC /* ViewControllers */,
 				40550C522028326F0014E125 /* Main.storyboard */,
 				40550C552028326F0014E125 /* Assets.xcassets */,
 				40550C572028326F0014E125 /* LaunchScreen.storyboard */,
@@ -104,6 +108,9 @@
 				40550C4B2028326F0014E125 /* LocalNotificationDemo.xcdatamodeld */,
 				407D83A220288F740084EF1F /* submarine.caf */,
 				40719EC92029904A00ACD88C /* watch.png */,
+				40AA3D38202B309400668CAC /* superquest_attack.mp4 */,
+				40AA3D39202B309400668CAC /* superquest.mp4 */,
+				40AA3D3C202B3D4C00668CAC /* T-ara (티아라)-뷰티풀 걸 (Beautiful Girl).mp3 */,
 			);
 			path = LocalNotificationDemo;
 			sourceTree = "<group>";
@@ -115,6 +122,16 @@
 				40550C652028326F0014E125 /* Info.plist */,
 			);
 			path = LocalNotificationDemoTests;
+			sourceTree = "<group>";
+		};
+		40AA3D37202AF20500668CAC /* ViewControllers */ = {
+			isa = PBXGroup;
+			children = (
+				40550C4E2028326F0014E125 /* MasterViewController.swift */,
+				40550C502028326F0014E125 /* DetailViewController.swift */,
+				407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */,
+			);
+			path = ViewControllers;
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -201,10 +218,13 @@
 			buildActionMask = 2147483647;
 			files = (
 				40AA3D34202A9A7500668CAC /* submarine.caf in Resources */,
+				40AA3D3B202B309500668CAC /* superquest.mp4 in Resources */,
 				40AA3D35202A9A7500668CAC /* watch.png in Resources */,
 				40550C592028326F0014E125 /* LaunchScreen.storyboard in Resources */,
 				40550C562028326F0014E125 /* Assets.xcassets in Resources */,
+				40AA3D3A202B309500668CAC /* superquest_attack.mp4 in Resources */,
 				40550C542028326F0014E125 /* Main.storyboard in Resources */,
+				40AA3D3D202B3D4C00668CAC /* T-ara (티아라)-뷰티풀 걸 (Beautiful Girl).mp3 in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

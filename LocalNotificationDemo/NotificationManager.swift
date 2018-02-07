@@ -10,6 +10,15 @@ import UIKit
 import UserNotifications
 
 
+let imagePath = Bundle.main.url(forResource: "watch", withExtension: "png")!
+let image = try! UNNotificationAttachment(identifier: "Image", url: imagePath, options: nil)
+let audioPath = Bundle.main.url(forResource: "T-ara (티아라)-뷰티풀 걸 (Beautiful Girl)", withExtension: "mp3")!
+let audio = try! UNNotificationAttachment(identifier: "Audio", url: audioPath, options: nil)
+let videoPath = Bundle.main.url(forResource: "superquest", withExtension: "mp4")!
+let video = try! UNNotificationAttachment(identifier: "Video", url: videoPath, options: nil)
+
+let sound = UNNotificationSound(named: "submarine.caf")
+
 class NotificationManager: NSObject {
 
     static let shared = NotificationManager()
@@ -24,6 +33,13 @@ class NotificationManager: NSObject {
 //        case `default`  = UNNotificationDefaultActionIdentifier = "com.apple.UNNotificationDefaultActionIdentifier"
         case snooze = "com.qq.bikan.UNNotificationSnoozeActionIdentifier"
         case stop   = "com.qq.bikan.UNNotificationStopActionIdentifier"
+        case delete = "com.qq.bikan.UNNotificationDeleteActionIdentifier"
+    }
+
+    enum NotificationId: String {
+        case location
+        case timer
+        case date
     }
 
     /// 向操作系统索要推送权限（并获取推送 token）
@@ -125,12 +141,13 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
                     print("Snooze")
 
                 case .stop:
-                    print("Delete")
+                    print("Stop")
+
+                case .delete:
+                    center.removePendingNotificationRequests(withIdentifiers: [response.notification.request.identifier])
                 }
             }
         }
-
-        completionHandler()
     }
 
     // app在前台收到推送消息。如果这儿的completionHandler参数包含alert，用户点击alert将会调用第一个委托方法
@@ -158,6 +175,11 @@ extension NotificationManager {
     ///
     /// - Parameter launchOptions: 启动时包含的信息（可能包含推送信息）
     static func onLaunch(with launchOptions: [UIApplicationLaunchOptionsKey : Any]?) {
+
+        // TODO: 事先清理
+        UNUserNotificationCenter.current().removeAllPendingNotificationRequests()
+        UNUserNotificationCenter.current().removeAllDeliveredNotifications()
+
         guard let op = launchOptions, let userInfo = op[.remoteNotification] as? [AnyHashable : Any] else {
             return
         }
