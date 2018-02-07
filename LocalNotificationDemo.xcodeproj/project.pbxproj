@@ -18,6 +18,8 @@
 		40550C6F202834B80014E125 /* NotificationManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40550C6E202834B80014E125 /* NotificationManager.swift */; };
 		40550C71202835A60014E125 /* AppDelegate+UserNotification.swift in Sources */ = {isa = PBXBuildFile; fileRef = 40550C70202835A60014E125 /* AppDelegate+UserNotification.swift */; };
 		407D83A4202897E20084EF1F /* MoreNotificationViewController.swift in Sources */ = {isa = PBXBuildFile; fileRef = 407D83A3202897E20084EF1F /* MoreNotificationViewController.swift */; };
+		40AA3D34202A9A7500668CAC /* submarine.caf in Resources */ = {isa = PBXBuildFile; fileRef = 407D83A220288F740084EF1F /* submarine.caf */; };
+		40AA3D35202A9A7500668CAC /* watch.png in Resources */ = {isa = PBXBuildFile; fileRef = 40719EC92029904A00ACD88C /* watch.png */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXContainerItemProxy section */
@@ -198,6 +200,8 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				40AA3D34202A9A7500668CAC /* submarine.caf in Resources */,
+				40AA3D35202A9A7500668CAC /* watch.png in Resources */,
 				40550C592028326F0014E125 /* LaunchScreen.storyboard in Resources */,
 				40550C562028326F0014E125 /* Assets.xcassets in Resources */,
 				40550C542028326F0014E125 /* Main.storyboard in Resources */,

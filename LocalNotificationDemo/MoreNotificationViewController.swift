@@ -191,7 +191,7 @@ class MoreNotificationViewController: UITableViewController {
                 })
 
             case .location(let locate):
-                locationManager.requestWhenInUseAuthorization()
+                locationManager.requestAlwaysAuthorization()
                 CLGeocoder().reverseGeocodeLocation(locate, completionHandler: { (marks, error) in
                     guard error == nil, let mark = marks?.first else {
                         self.setNeedsLayout()

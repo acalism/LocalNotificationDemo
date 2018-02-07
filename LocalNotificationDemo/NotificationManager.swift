@@ -10,7 +10,10 @@ import UIKit
 import UserNotifications
 
 
-class NotificationManager {
+class NotificationManager: NSObject {
+
+    static let shared = NotificationManager()
+    private override init() { super.init() }
 
     enum CategoryIdentifier: String {
         case reminder // = "UYLReminderCategory"
@@ -37,7 +40,7 @@ class NotificationManager {
         // 3. 获取用户授权
         let uc = UNUserNotificationCenter.current()
         uc.setNotificationCategories([category])
-        uc.delegate = AppDelegate.shared
+        uc.delegate = shared
         uc.requestAuthorization(options: [.alert, .badge, .sound]) { (granted, error) in
             if let e = error { // 无论是拒绝推送，还是不提供 aps-certificate，此 error 始终为 nil
                 print("UNUserNotificationCenter 注册通知失败, \(e)")
@@ -77,6 +80,75 @@ class NotificationManager {
     }
 }
 
+
+
+@available(iOS 10.0, *)
+extension NotificationManager: UNUserNotificationCenterDelegate {
+
+    // 用户点击推送消息（可能包含自定义的 action）
+    func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+        if let t = response.notification.request.trigger {
+            switch t {
+            case is UNPushNotificationTrigger:
+                NotificationManager.onReceiveRemoteNotification(userInfo: response.notification.request.content.userInfo)
+
+            default:
+                break
+            }
+        }
+
+        defer {
+            completionHandler()
+        }
+
+        guard let categoryId = NotificationManager.CategoryIdentifier(rawValue: response.notification.request.content.categoryIdentifier) else {
+            return
+        }
+
+        switch categoryId {
+        case .reminder:
+            switch response.actionIdentifier {
+            case UNNotificationDismissActionIdentifier: // 不作任何操作，且该 category 有 .customDismissAction 时
+                print("Dismiss Action: \(response.actionIdentifier)")
+
+            case UNNotificationDefaultActionIdentifier: // 点内容
+                print("Default: \(response.actionIdentifier)")
+
+            default:
+                guard let id = NotificationManager.ActionIdentifier(rawValue: response.actionIdentifier) else {
+                    print("Unknown action")
+                    break
+                }
+
+                switch id {
+                case .snooze:
+                    print("Snooze")
+
+                case .stop:
+                    print("Delete")
+                }
+            }
+        }
+
+        completionHandler()
+    }
+
+    // app在前台收到推送消息。如果这儿的completionHandler参数包含alert，用户点击alert将会调用第一个委托方法
+    func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
+        if let t = notification.request.trigger {
+            switch t {
+            case is UNPushNotificationTrigger:
+                NotificationManager.onReceiveRemoteNotification(userInfo: notification.request.content.userInfo)
+                completionHandler([])
+                return
+
+            default:
+                break
+            }
+        }
+        completionHandler([.alert, .sound])
+    }
+}
 
 // MARK: - 推送消息处理（冷启动和热启动）
 
