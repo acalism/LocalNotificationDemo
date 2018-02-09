@@ -50,6 +50,7 @@ class NotificationManager: NSObject {
         // 2. 自定义通知响应事件
         let snoozeAction = UNNotificationAction(identifier: ActionIdentifier.snooze.rawValue, title: "Snooze", options: [])
         let stopAction   = UNNotificationAction(identifier: ActionIdentifier.stop.rawValue, title: "Stop", options: [.destructive])
+        //let deleteAction   = UNNotificationAction(identifier: ActionIdentifier.delete.rawValue, title: "Delete", options: [.destructive])
         let category     = UNNotificationCategory(identifier: CategoryIdentifier.reminder.rawValue, actions: [snoozeAction, stopAction], intentIdentifiers: [], options: .customDismissAction)
 
 
@@ -142,9 +143,10 @@ extension NotificationManager: UNUserNotificationCenterDelegate {
 
                 case .stop:
                     print("Stop")
+                    fallthrough
 
                 case .delete:
-                    center.removePendingNotificationRequests(withIdentifiers: [response.notification.request.identifier])
+                    center.removeDeliveredNotifications(withIdentifiers: [response.notification.request.identifier])
                 }
             }
         }

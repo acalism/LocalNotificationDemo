@@ -75,9 +75,9 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
 
     func createLocalNotification(event newEvent: Event, timeInterval ti: TimeInterval) {
         let content = UNMutableNotificationContent()
-        content.title = "Don't forget"
-        content.body = "Buy some milk"
-        content.attachments = [audio]
+        content.title = NSString.localizedUserNotificationString(forKey: "Don't forget", arguments: nil)
+        content.body = NSString.localizedUserNotificationString(forKey: "Buy some milk", arguments: nil)
+        content.attachments = [image] // [[image, audio, video][Int(arc4random()) % 3]]
         content.sound = sound
         content.categoryIdentifier = NotificationManager.CategoryIdentifier.reminder.rawValue
 
@@ -136,7 +136,16 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         return true
     }
 
-    override func tableView(_ tableView: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
+//    @available(iOS 11, *)
+//    override func tableView(_ tv: UITableView, trailingSwipeActionsConfigurationForRowAt indexPath: IndexPath) -> UISwipeActionsConfiguration? {
+//        let deleteAction = UIContextualAction(style: .destructive, title: "Delete") { [weak self] (action, view, completion) in
+//            self?.tableView(tv, commit: .delete, forRowAt: indexPath)
+//            completion(true)
+//        }
+//        return UISwipeActionsConfiguration(actions: [deleteAction])
+//    }
+
+    override func tableView(_ tv: UITableView, commit editingStyle: UITableViewCellEditingStyle, forRowAt indexPath: IndexPath) {
         if editingStyle == .delete {
             let context = fetchedResultsController.managedObjectContext
             let event = fetchedResultsController.object(at: indexPath)

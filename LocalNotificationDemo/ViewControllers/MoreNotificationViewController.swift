@@ -27,6 +27,7 @@ let timeFormatter: DateFormatter = {
     return formatter
 }()
 
+private let noticeIds = ["MorningAlarm", "GetOffAlarm"]
 
 class MoreNotificationViewController: UITableViewController {
 
@@ -42,7 +43,7 @@ class MoreNotificationViewController: UITableViewController {
     }
 
     deinit {
-        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["MorningAlarm", "GetOffAlarm"])
+        UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: noticeIds)
     }
 
     // MARK: - Table view data source
@@ -58,9 +59,11 @@ class MoreNotificationViewController: UITableViewController {
     }
 
     override func tableView(_ tv: UITableView, performAction action: Selector, forRowAt indexPath: IndexPath, withSender sender: Any?) {
-        if action == #selector(Cell.onSwitch(_:)), let s = sender as? UISwitch {
-            dataArray[indexPath.row].isOn = s.isOn
-            if !s.isOn {
+        if action == #selector(Cell.onSwitch(_:)), let s = sender as? Cell {
+            dataArray[indexPath.row].isOn = s.`switch`.isOn
+            if s.`switch`.isOn {
+                s.bindData(dataArray[indexPath.row])
+            } else  {
                 UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["location"])
             }
         }
@@ -161,7 +164,9 @@ class MoreNotificationViewController: UITableViewController {
             leftLabel.text = model.eventName
             `switch`.isOn = model.isOn
 
-            createLocalNotification(model: model)
+            createLocalNotification(model: model, completion: { [weak self] in
+                self?.setNeedsLayout()
+            })
         }
 
         override func layoutSubviews() {
@@ -177,10 +182,10 @@ class MoreNotificationViewController: UITableViewController {
 
         @objc
         func onSwitch(_ sender: Any) {
-            forward(for: #selector(onSwitch(_:)), sender: sender)
+            forward(for: #selector(onSwitch(_:)))
         }
 
-        func createLocalNotification(model: Model) {
+        func createLocalNotification(model: Model, completion: @escaping()->Void) {
             let center = UNUserNotificationCenter.current()
 
             let content = UNMutableNotificationContent()
@@ -191,24 +196,24 @@ class MoreNotificationViewController: UITableViewController {
             switch model.attach {
             case .time(let date, let formatter):
                 middleLabel.text = formatter.string(from: date)
-                setNeedsLayout()
+                completion()
 
                 content.title = NSString.localizedUserNotificationString(forKey: "Wake up!", arguments: nil)
                 content.subtitle = NSString.localizedUserNotificationString(forKey: "Rise and shine!", arguments: nil)
                 content.body = NSString.localizedUserNotificationString(forKey: "It's morning time!", arguments: nil)
 
                 // Configure the trigger for a 7am wakeup.
-                var dateInfo = DateComponents()
-                dateInfo.hour = 19
-                dateInfo.minute = 41
+                let dateInfo = Calendar.current.dateComponents([.hour, .minute, .second], from: Date().addingTimeInterval(5))
                 let trigger = UNCalendarNotificationTrigger(dateMatching: dateInfo, repeats: false)
 
                 // Create the request object.
-                let request = UNNotificationRequest(identifier: "MorningAlarm", content: content, trigger: trigger)
+                let request = UNNotificationRequest(identifier: noticeIds[0], content: content, trigger: trigger)
                 center.add(request, withCompletionHandler: { (error) in
                     if let e = error {
                         print(e)
+                        return
                     }
+                    print("add local notification successfully. id = \(noticeIds[0]); content = \(content); trigger = \(trigger)")
                 })
 
             case .location(let locate):
@@ -222,7 +227,7 @@ class MoreNotificationViewController: UITableViewController {
                 let trigger = UNLocationNotificationTrigger(region: region, repeats: false)
 
                 // Create the request object.
-                let request = UNNotificationRequest(identifier: "GetOffAlarm", content: content, trigger: trigger)
+                let request = UNNotificationRequest(identifier: noticeIds[1], content: content, trigger: trigger)
                 center.add(request, withCompletionHandler: { (error) in
                     if let e = error {
                         print(e)
@@ -231,12 +236,10 @@ class MoreNotificationViewController: UITableViewController {
 
                 locationManager.requestWhenInUseAuthorization() //requestAlwaysAuthorization()
                 CLGeocoder().reverseGeocodeLocation(locate, completionHandler: { (marks, error) in
-                    guard error == nil, let mark = marks?.first else {
-                        self.setNeedsLayout()
-                        return
+                    if error == nil, let mark = marks?.first {
+                        self.middleLabel.text = [mark.name, mark.locality].flatMap{$0}.joined(separator: ", ")
                     }
-                    self.middleLabel.text = [mark.name, mark.locality].flatMap{$0}.joined(separator: ", ")
-                    self.setNeedsLayout()
+                    completion()
                 })
             }
         }

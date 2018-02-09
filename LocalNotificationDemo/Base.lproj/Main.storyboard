@@ -127,6 +127,7 @@
                     <navigationItem key="navigationItem" id="qJy-qX-atC"/>
                     <connections>
                         <outlet property="rightLabel" destination="7dX-uN-393" id="tHZ-lN-lzn"/>
+                        <outlet property="rightSwitch" destination="dzk-jj-5Y5" id="8hK-4M-MHC"/>
                         <outlet property="timePicker" destination="iuZ-p3-V0Z" id="g6o-4R-B8M"/>
                     </connections>
                 </tableViewController>
