@@ -56,7 +56,7 @@ class MasterViewController: UITableViewController, NSFetchedResultsControllerDel
         let context = self.fetchedResultsController.managedObjectContext
         let newEvent = Event(context: context)
 
-        let ti = 5 * Double((fetchedResultsController.sections?.first?.numberOfObjects ?? 0) + 1)
+        let ti = 5.0
         // If appropriate, configure the new managed object.
         newEvent.timestamp = Date().addingTimeInterval(ti)
 

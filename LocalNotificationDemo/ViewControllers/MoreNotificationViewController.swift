@@ -52,8 +52,8 @@ class MoreNotificationViewController: UITableViewController {
         return dataArray.count
     }
 
-    override func tableView(_ tableView: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
-        let cell = tableView.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
+    override func tableView(_ tv: UITableView, cellForRowAt indexPath: IndexPath) -> UITableViewCell {
+        let cell = tv.dequeueReusableCell(withIdentifier: "Cell", for: indexPath) as! Cell
         cell.bindData(dataArray[indexPath.row])
         return cell
     }
@@ -64,7 +64,7 @@ class MoreNotificationViewController: UITableViewController {
             if s.`switch`.isOn {
                 s.bindData(dataArray[indexPath.row])
             } else  {
-                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: ["location"])
+                UNUserNotificationCenter.current().removePendingNotificationRequests(withIdentifiers: [noticeIds[1]])
             }
         }
     }
